@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'subscription',
+      allow_promotion_codes: true,  // Enable coupon/promo code field
       line_items: [
         {
           price: priceId,
