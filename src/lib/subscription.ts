@@ -7,7 +7,7 @@ export async function checkSubscription(userId: string): Promise<boolean> {
   const { data: { user } } = await supabase.auth.getUser()
   
   // Add your test emails here
-  const testEmails = ['myles@myleskameron.com']  // Replace with your actual email
+  const testEmails: string[] = []  // Empty for now to test the full flow
   if (user?.email && testEmails.includes(user.email)) {
     console.log('Test account detected, granting access')
     return true
