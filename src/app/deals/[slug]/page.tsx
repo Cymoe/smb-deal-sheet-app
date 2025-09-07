@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { checkSubscription } from '@/lib/subscription'
+import UpgradeButton from '@/components/UpgradeButton'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -20,12 +22,25 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-export default async function DealPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function DealPage({ 
+  params, 
+  searchParams 
+}: { 
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ upgraded?: string }>
+}) {
   const { slug } = await params
+  await searchParams // Just await it without destructuring
   const supabase = await createClient()
   
   // Check if user is authenticated
   const { data: { user } } = await supabase.auth.getUser()
+  
+  // Check subscription status if user is authenticated
+  let hasSubscription = false
+  if (user) {
+    hasSubscription = await checkSubscription(user.id)
+  }
   
   // Fetch the deal (available to all users)
   const { data: deal, error } = await supabase
@@ -123,7 +138,7 @@ export default async function DealPage({ params }: { params: Promise<{ slug: str
               
               {/* Contact Broker Button */}
               <div className="mt-8">
-                {user ? (
+                {user && hasSubscription ? (
                   <>
                     <a
                       href={`mailto:${deal.broker_email}?subject=Inquiry about ${deal.business_type} - ${deal.city}, ${deal.state}`}
@@ -146,7 +161,7 @@ export default async function DealPage({ params }: { params: Promise<{ slug: str
                       Contact Broker
                     </button>
                     <p className="text-sm text-gray-500 text-center mt-2">
-                      Sign in to contact broker
+                      {!user ? 'Sign in to contact broker' : 'Pro subscription required'}
                     </p>
                   </div>
                 )}
@@ -156,7 +171,7 @@ export default async function DealPage({ params }: { params: Promise<{ slug: str
           
           {/* Deal Details */}
           <div className="lg:col-span-2 space-y-8 relative">
-            {!user ? (
+            {!user || !hasSubscription ? (
               <>
                 {/* Blurred Content Preview */}
                 <div className="space-y-8 filter blur-sm select-none pointer-events-none">
@@ -187,55 +202,94 @@ export default async function DealPage({ params }: { params: Promise<{ slug: str
                   </div>
                 </div>
                 
-                {/* Signup Overlay */}
+                {/* Signup/Upgrade Overlay */}
                 <div className="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-[1px] rounded-lg">
                   <div className="text-center p-8 max-w-md">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                      Want the Full Deal Details?
-                    </h3>
-                    <p className="text-gray-700 mb-6">
-                      Join SMB Deal Sheet to unlock:
-                    </p>
-                    <ul className="text-left space-y-2 mb-8 text-gray-700">
-                      <li className="flex items-start gap-2">
-                        <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        Complete financial analysis
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        Our honest &ldquo;Real Talk&rdquo; assessment
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        Direct broker contact information
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        Access to all deal listings
-                      </li>
-                    </ul>
-                    <div className="space-y-3">
-                      <Link
-                        href={`/signup?redirect=/deals/${deal.slug}`}
-                        className="block w-full bg-brand-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-brand-blue-dark transition-colors"
-                      >
-                        Join Pro - Get Instant Access
-                      </Link>
-                      <Link
-                        href={`/login?redirect=/deals/${deal.slug}`}
-                        className="block w-full text-gray-600 hover:text-gray-900 font-medium"
-                      >
-                        Already a member? Sign in
-                      </Link>
-                    </div>
+                    {!user ? (
+                      <>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                          Want the Full Deal Details?
+                        </h3>
+                        <p className="text-gray-700 mb-6">
+                          Join SMB Deal Sheet Pro to unlock:
+                        </p>
+                        <ul className="text-left space-y-2 mb-8 text-gray-700">
+                          <li className="flex items-start gap-2">
+                            <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            Complete financial analysis
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            Our honest &ldquo;Real Talk&rdquo; assessment
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            Direct broker contact information
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            Access to all deal listings
+                          </li>
+                        </ul>
+                        <div className="space-y-3">
+                          <Link
+                            href={`/login?redirect=/deals/${deal.slug}&upgrade=true`}
+                            className="block w-full bg-brand-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-brand-blue-dark transition-colors"
+                          >
+                            Sign In to Subscribe
+                          </Link>
+                          <Link
+                            href={`/signup?redirect=/deals/${deal.slug}&upgrade=true`}
+                            className="block w-full text-gray-600 hover:text-gray-900 font-medium"
+                          >
+                            New here? Create an account
+                          </Link>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                          Upgrade to Pro
+                        </h3>
+                        <p className="text-gray-700 mb-6">
+                          You&apos;re signed in but need a Pro subscription to access full deal details.
+                        </p>
+                        <ul className="text-left space-y-2 mb-8 text-gray-700">
+                          <li className="flex items-start gap-2">
+                            <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            Unlimited access to all deals
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            Direct broker contact info
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            Weekly curated deal alerts
+                          </li>
+                        </ul>
+                        <div className="space-y-3">
+                          <UpgradeButton dealSlug={deal.slug} />
+                          <p className="text-sm text-gray-600">
+                            Billed monthly. Cancel anytime.
+                          </p>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </>

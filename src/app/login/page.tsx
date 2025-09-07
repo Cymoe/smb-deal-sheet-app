@@ -1,16 +1,37 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, Suspense, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const searchParams = useSearchParams()
-  const redirectTo = searchParams.get('redirect') || '/deals'
+  const router = useRouter()
+  const isUpgraded = searchParams.get('upgraded') === 'true'
+  const dealSlug = searchParams.get('deal')
+  const redirectTo = searchParams.get('redirect') || (dealSlug ? `/deals/${dealSlug}` : '/deals')
   const supabase = createClient()
+  
+  // Check if user has a pending deal from payment
+  useEffect(() => {
+    const checkPendingDeal = async () => {
+      const pendingDeal = sessionStorage.getItem('pendingDeal')
+      if (pendingDeal) {
+        // Check if user is already logged in
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          // User is already logged in, redirect to deal
+          sessionStorage.removeItem('pendingDeal')
+          sessionStorage.removeItem('appOrigin')
+          router.push(`/deals/${pendingDeal}?upgraded=true`)
+        }
+      }
+    }
+    checkPendingDeal()
+  }, [router, supabase])
 
   const handleGoogleLogin = async () => {
     setLoading(true)
@@ -38,6 +59,11 @@ function LoginForm() {
         </div>
 
         <div className="bg-white shadow-md rounded-lg p-8">
+          {isUpgraded && (
+            <div className="bg-green-50 text-green-700 p-3 rounded-md mb-4">
+              🎉 Subscription activated! Sign in to access your deals.
+            </div>
+          )}
           {error && (
             <div className="bg-red-50 text-red-600 p-3 rounded-md mb-4">
               {error}
