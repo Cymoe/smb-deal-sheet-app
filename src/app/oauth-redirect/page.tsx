@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 
-export default function OAuthRedirect() {
+function OAuthRedirectContent() {
   const searchParams = useSearchParams()
   
   useEffect(() => {
@@ -24,5 +24,17 @@ export default function OAuthRedirect() {
     <div className="min-h-screen flex items-center justify-center">
       <p>Redirecting...</p>
     </div>
+  )
+}
+
+export default function OAuthRedirect() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    }>
+      <OAuthRedirectContent />
+    </Suspense>
   )
 }

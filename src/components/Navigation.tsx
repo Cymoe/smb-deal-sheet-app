@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
-import { useRouter, usePathname } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { checkSubscriptionClient } from '@/lib/subscription-client'
 
 export default function Navigation() {
@@ -14,7 +14,6 @@ export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [hasSubscription, setHasSubscription] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
-  const router = useRouter()
   const pathname = usePathname()
   const supabase = createClient()
   
