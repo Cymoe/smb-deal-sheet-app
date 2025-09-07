@@ -33,22 +33,8 @@ export async function GET() {
       }
     })
     
-    console.log('Force signout complete, redirecting to verify page')
-    
-    // Redirect to verification page instead of home
-    const verifyResponse = NextResponse.redirect(new URL('/verify-signout', process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'))
-    
-    // Clear cookies on the verify response too
-    allCookies.forEach(cookie => {
-      if (cookie.name.includes('supabase') || cookie.name.includes('auth')) {
-        verifyResponse.cookies.set(cookie.name, '', {
-          expires: new Date(0),
-          path: '/',
-        })
-      }
-    })
-    
-    return verifyResponse
+    console.log('Force signout complete, redirecting to home')
+    return response
     
   } catch (error) {
     console.error('Force signout error:', error)
