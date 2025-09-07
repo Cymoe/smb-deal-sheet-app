@@ -349,26 +349,6 @@ export default async function DealPage({
           </div>
         </div>
       </div>
-      
-      {/* Bottom CTA */}
-      <div className="bg-gray-900 text-white py-16 mt-16">
-        <div className="max-w-4xl mx-auto text-center px-4">
-          <h2 className="text-3xl font-bold mb-4">
-            Want More Deals Like This?
-          </h2>
-          <p className="text-xl mb-8">
-            Join our newsletter to get exclusive access to off-market businesses every week.
-          </p>
-          <a
-            href="https://myleskameron.beehiiv.com/?close_draft_preview=true"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block bg-white text-gray-900 px-8 py-4 rounded-md font-semibold hover:bg-gray-100 transition"
-          >
-            Subscribe to Deal Flow →
-          </a>
-        </div>
-      </div>
     </div>
   )
 }
