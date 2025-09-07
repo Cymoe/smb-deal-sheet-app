@@ -84,40 +84,15 @@ export default function Navigation() {
   }, [])
 
   const handleSignOut = async () => {
-    console.log('Sign out button clicked')
+    // Close dropdowns immediately
+    setDropdownOpen(false)
+    setMobileMenuOpen(false)
     
-    try {
-      // Clear dropdown immediately
-      setDropdownOpen(false)
-      setMobileMenuOpen(false)
-      
-      // Clear local state immediately for instant UI feedback
-      setUser(null)
-      setHasSubscription(false)
-      
-      // Call the sign out API endpoint
-      const response = await fetch('/api/auth/signout', {
-        method: 'POST',
-        credentials: 'include'
-      })
-      
-      if (!response.ok) {
-        console.error('Sign out API failed:', response.status)
-      }
-      
-      // Always navigate to home and refresh, regardless of API response
-      router.push('/')
-      
-      // Force a page refresh to clear all client-side state
-      setTimeout(() => {
-        window.location.reload()
-      }, 100)
-      
-    } catch (error) {
-      console.error('Unexpected error during sign out:', error)
-      // Force reload as last resort
-      window.location.href = '/'
-    }
+    // Sign out from Supabase
+    await supabase.auth.signOut()
+    
+    // Single clean redirect - no double navigation, no flashing
+    window.location.href = '/'
   }
 
   return (
