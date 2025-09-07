@@ -83,7 +83,7 @@ export default function UpgradeButton({ dealSlug }: UpgradeButtonProps) {
       >
         {loading ? 'Loading...' : (
           <>
-            Subscribe for {billingPeriod === 'monthly' ? '$49/month' : '$490/year'} →
+            Unlock All Deals - {billingPeriod === 'monthly' ? '$49/month' : '$490/year'}
           </>
         )}
       </button>

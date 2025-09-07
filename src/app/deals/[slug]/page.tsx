@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { checkSubscription } from '@/lib/subscription'
 import UpgradeButton from '@/components/UpgradeButton'
+import ExpressInterestButton from '@/components/ExpressInterestButton'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -136,32 +137,28 @@ export default async function DealPage({
                 )}
               </div>
               
-              {/* Contact Broker Button */}
+              {/* Get Seller Details Button */}
               <div className="mt-8">
                 {user && hasSubscription ? (
                   <>
                     <a
-                      href={`mailto:${deal.broker_email}?subject=Inquiry about ${deal.business_type} - ${deal.city}, ${deal.state}`}
+                      href={`mailto:myles@myleskameron.com?subject=Introduction Request: ${deal.business_type} - ${deal.city}, ${deal.state}`}
                       className="w-full block text-center bg-brand-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-brand-blue-dark transition-colors"
                     >
-                      Contact Broker
+                      Get Seller Introduction
                     </a>
-                    {deal.broker_name && (
-                      <p className="text-sm text-gray-600 text-center mt-2">
-                        {deal.broker_name}
-                      </p>
-                    )}
+                    <p className="text-sm text-gray-600 text-center mt-2">
+                      I&apos;ll connect you directly with the seller
+                    </p>
                   </>
                 ) : (
-                  <div className="relative">
-                    <button
-                      disabled
-                      className="w-full block text-center bg-gray-300 text-gray-500 px-6 py-3 rounded-lg font-semibold cursor-not-allowed"
-                    >
-                      Contact Broker
-                    </button>
-                    <p className="text-sm text-gray-500 text-center mt-2">
-                      {!user ? 'Sign in to contact broker' : 'Pro subscription required'}
+                  <div className="space-y-2">
+                    <ExpressInterestButton 
+                      dealId={deal.id}
+                      dealTitle={`${deal.business_type} - ${deal.city}, ${deal.state}`}
+                    />
+                    <p className="text-sm text-gray-500 text-center">
+                      {!user ? 'or sign in for direct seller access' : 'or upgrade for direct seller access'}
                     </p>
                   </div>
                 )}
@@ -208,7 +205,7 @@ export default async function DealPage({
                     {!user ? (
                       <>
                         <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                          Want the Full Deal Details?
+                          Get Direct Access to This Seller
                         </h3>
                         <p className="text-gray-700 mb-6">
                           Join SMB Deal Sheet Pro to unlock:
@@ -218,25 +215,25 @@ export default async function DealPage({
                             <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            Complete financial analysis
+                            Direct seller introductions (no broker fees)
                           </li>
                           <li className="flex items-start gap-2">
                             <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            Our honest &ldquo;Real Talk&rdquo; assessment
+                            Real financials &amp; our &ldquo;Real Talk&rdquo; analysis
                           </li>
                           <li className="flex items-start gap-2">
                             <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            Direct broker contact information
+                            See deals 30-60 days before they go public
                           </li>
                           <li className="flex items-start gap-2">
                             <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            Access to all deal listings
+                            Access our full pipeline of off-market deals
                           </li>
                         </ul>
                         <div className="space-y-3">
@@ -257,35 +254,35 @@ export default async function DealPage({
                     ) : (
                       <>
                         <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                          Upgrade to Pro
+                          Unlock Seller Access
                         </h3>
                         <p className="text-gray-700 mb-6">
-                          You&apos;re signed in but need a Pro subscription to access full deal details.
+                          Subscribe to connect directly with motivated sellers
                         </p>
                         <ul className="text-left space-y-2 mb-8 text-gray-700">
                           <li className="flex items-start gap-2">
                             <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            Unlimited access to all deals
+                            Skip the broker - deal directly with sellers
                           </li>
                           <li className="flex items-start gap-2">
                             <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            Direct broker contact info
+                            Get introductions to pre-vetted sellers
                           </li>
                           <li className="flex items-start gap-2">
                             <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            Weekly curated deal alerts
+                            First access to new off-market deals
                           </li>
                         </ul>
                         <div className="space-y-3">
                           <UpgradeButton dealSlug={deal.slug} />
                           <p className="text-sm text-gray-600">
-                            Billed monthly. Cancel anytime.
+                            Less than a business lunch to access unlimited deals
                           </p>
                         </div>
                       </>
