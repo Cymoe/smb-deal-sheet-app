@@ -65,9 +65,19 @@ export default function Navigation() {
   }, [])
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push('/')
-    router.refresh()
+    // Clear local state immediately for instant UI update
+    setUser(null)
+    setHasSubscription(false)
+    setDropdownOpen(false)
+    
+    // Sign out from Supabase
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      console.error('Logout error:', error)
+    }
+    
+    // Force a hard refresh to clear all state
+    window.location.href = '/'
   }
 
   return (
@@ -100,9 +110,7 @@ export default function Navigation() {
           </div>
           <div className="flex items-center space-x-4">
             <div className="hidden md:flex items-center space-x-4">
-              {loading ? (
-                <div className="text-gray-400">Loading...</div>
-              ) : user ? (
+              {!loading && user ? (
                 <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -156,7 +164,7 @@ export default function Navigation() {
                   </div>
                 )}
               </div>
-            ) : (
+            ) : !loading ? (
               <div className="flex items-center space-x-4">
                 <Link href="/login" className="text-gray-600 hover:text-gray-900 font-light transition-colors">
                   Sign In
@@ -165,7 +173,7 @@ export default function Navigation() {
                   Join Pro
                 </Link>
               </div>
-            )}
+            ) : null}
             </div>
             {/* Mobile menu button */}
             <button

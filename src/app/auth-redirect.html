@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Redirecting...</title>
+</head>
+<body>
+  <p>Redirecting to localhost...</p>
+  <script>
+    // Get the current URL
+    const url = new URL(window.location.href);
+    
+    // If we have a code parameter and we're on production
+    if (url.searchParams.get('code') && window.location.hostname === 'app.smbdealsheet.com') {
+      // Redirect to localhost with the same parameters
+      const newUrl = new URL(url.pathname + url.search, 'http://localhost:3000');
+      window.location.href = newUrl.toString();
+    }
+  </script>
+</body>
+</html>

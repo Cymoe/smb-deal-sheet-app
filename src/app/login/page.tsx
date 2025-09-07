@@ -15,37 +15,49 @@ function LoginForm() {
   const redirectTo = searchParams.get('redirect') || (dealSlug ? `/deals/${dealSlug}` : '/deals')
   const supabase = createClient()
   
-  // Check if user has a pending deal from payment
+  // Check if user is already logged in or has pending deal
   useEffect(() => {
-    const checkPendingDeal = async () => {
-      const pendingDeal = sessionStorage.getItem('pendingDeal')
-      if (pendingDeal) {
-        // Check if user is already logged in
-        const { data: { user } } = await supabase.auth.getUser()
-        if (user) {
-          // User is already logged in, redirect to deal
+    const checkAuthAndPendingDeal = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (user) {
+        // Check for pending deal first
+        const pendingDeal = sessionStorage.getItem('pendingDeal')
+        if (pendingDeal) {
           sessionStorage.removeItem('pendingDeal')
           sessionStorage.removeItem('appOrigin')
           router.push(`/deals/${pendingDeal}?upgraded=true`)
+        } else {
+          // Otherwise redirect to the intended page or deals
+          router.push(redirectTo)
         }
       }
     }
-    checkPendingDeal()
-  }, [router, supabase])
+    checkAuthAndPendingDeal()
+  }, [router, supabase, redirectTo])
 
   const handleGoogleLogin = async () => {
     setLoading(true)
     setError('')
 
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`
-      }
-    })
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`
+        }
+      })
 
-    if (error) {
-      setError(error.message)
+      console.log('OAuth response:', { data, error })
+
+      if (error) {
+        console.error('OAuth error:', error)
+        setError(error.message)
+        setLoading(false)
+      }
+    } catch (err) {
+      console.error('Unexpected error:', err)
+      setError('An unexpected error occurred')
       setLoading(false)
     }
   }
