@@ -41,17 +41,8 @@ function LoginForm() {
     setError('')
 
     try {
-      // Determine the correct redirect URL based on environment
-      let authRedirectUrl = `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`
-      
-      // If we're on localhost, we need to use the production URL for Supabase
-      // but include params to redirect back to localhost after auth
-      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        // Use production URL for OAuth (as configured in Supabase dashboard)
-        // But add params so production knows to redirect back to localhost
-        const prodUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://app.smbdealsheet.com'
-        authRedirectUrl = `${prodUrl}/auth/callback?redirect=${encodeURIComponent(redirectTo)}&from_local=true&local_origin=${encodeURIComponent(window.location.origin)}`
-      }
+      // Simple approach: use the current origin for the redirect
+      const authRedirectUrl = `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`
 
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',

@@ -9,7 +9,7 @@ import { checkSubscriptionClient } from '@/lib/subscription-client'
 
 export default function Navigation() {
   const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false) // Don't show loading state
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [hasSubscription, setHasSubscription] = useState(false)
@@ -23,15 +23,30 @@ export default function Navigation() {
   useEffect(() => {
     // Check current user and subscription
     const checkUserAndSubscription = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
+      console.log('Navigation: Starting auth check...')
       
-      if (user) {
-        const isSubscribed = await checkSubscriptionClient(user.id)
-        setHasSubscription(isSubscribed)
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser()
+        
+        console.log('Navigation: Auth response:', { user: user?.email, error })
+        
+        setUser(user)
+        
+        // Only check subscription if we have a user
+        if (user) {
+          try {
+            const isSubscribed = await checkSubscriptionClient(user.id)
+            console.log('Navigation: Subscription status:', isSubscribed)
+            setHasSubscription(isSubscribed)
+          } catch (error) {
+            console.error('Navigation: Error checking subscription:', error)
+            setHasSubscription(false)
+          }
+        }
+      } catch (error) {
+        console.error('Navigation: Unexpected error:', error)
+        setUser(null)
       }
-      
-      setLoading(false)
     }
     
     checkUserAndSubscription()
@@ -41,15 +56,20 @@ export default function Navigation() {
       setUser(session?.user ?? null)
       
       if (session?.user) {
-        const isSubscribed = await checkSubscriptionClient(session.user.id)
-        setHasSubscription(isSubscribed)
+        try {
+          const isSubscribed = await checkSubscriptionClient(session.user.id)
+          setHasSubscription(isSubscribed)
+        } catch (error) {
+          console.error('Error checking subscription on auth change:', error)
+          setHasSubscription(false)
+        }
       } else {
         setHasSubscription(false)
       }
     })
 
     return () => subscription.unsubscribe()
-  }, [supabase.auth])
+  }, [])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -109,7 +129,7 @@ export default function Navigation() {
           </div>
           <div className="flex items-center space-x-4">
             <div className="hidden md:flex items-center space-x-4">
-              {!loading && user ? (
+              {user ? (
                 <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -163,7 +183,7 @@ export default function Navigation() {
                   </div>
                 )}
               </div>
-            ) : !loading ? (
+            ) : (
               <div className="flex items-center space-x-4">
                 <Link href="/login" className="text-gray-600 hover:text-gray-900 font-light transition-colors">
                   Sign In
@@ -172,7 +192,7 @@ export default function Navigation() {
                   Join Pro
                 </Link>
               </div>
-            ) : null}
+            )}
             </div>
             {/* Mobile menu button */}
             <button
@@ -242,7 +262,7 @@ export default function Navigation() {
                 </button>
               </>
             )}
-            {!user && !loading && (
+            {!user && (
               <>
                 <Link
                   href="/login"
