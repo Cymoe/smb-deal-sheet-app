@@ -1,20 +1,24 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-export default function SignUpPage() {
+function SignUpForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const searchParams = useSearchParams()
+  const dealSlug = searchParams.get('deal')
+  const redirectTo = searchParams.get('redirect') || (dealSlug ? `/deals/${dealSlug}` : '/deals')
   const supabase = createClient()
 
   const handleGoogleSignUp = async () => {
     setLoading(true)
     setError('')
 
-    // Simple approach: use the current origin for the redirect
-    const authRedirectUrl = `${window.location.origin}/auth/callback`
+    // Pass the redirect URL through to the callback
+    const authRedirectUrl = `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -62,12 +66,23 @@ export default function SignUpPage() {
 
           <p className="text-center text-sm text-gray-600 mt-6">
             Already have an account?{' '}
-            <Link href="/login" className="text-black hover:text-gray-800 font-semibold">
+            <Link 
+              href={redirectTo !== '/deals' ? `/login?redirect=${encodeURIComponent(redirectTo)}` : '/login'} 
+              className="text-black hover:text-gray-800 font-semibold"
+            >
               Sign in
             </Link>
           </p>
         </div>
       </div>
     </div>
+  )
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
+      <SignUpForm />
+    </Suspense>
   )
 }

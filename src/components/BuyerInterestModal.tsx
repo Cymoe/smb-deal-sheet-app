@@ -79,9 +79,9 @@ export default function BuyerInterestModal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100] p-4">
-      <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4" style={{ zIndex: 99999 }}>
+      <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto relative shadow-2xl" style={{ zIndex: 99999 }}>
+        <div className="p-6 relative" style={{ zIndex: 99999 }}>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold">Express Interest</h2>
             <button
@@ -108,7 +108,7 @@ export default function BuyerInterestModal({
                 Get introduced to the seller of: <strong>{dealTitle}</strong>
               </p>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Your Name *

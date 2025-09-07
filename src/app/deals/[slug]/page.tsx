@@ -200,7 +200,7 @@ export default async function DealPage({
                 </div>
                 
                 {/* Signup/Upgrade Overlay */}
-                <div className="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-[1px] rounded-lg">
+                <div className="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-[1px] rounded-lg z-0">
                   <div className="text-center p-8 max-w-md">
                     {!user ? (
                       <>
