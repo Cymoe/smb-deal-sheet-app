@@ -74,6 +74,8 @@ export default function BuyerInterestModal({
     }
   }
 
+  console.log('BuyerInterestModal render:', { isOpen, dealId, dealTitle })
+  
   if (!isOpen) return null
 
   return (

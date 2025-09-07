@@ -14,7 +14,10 @@ export default function ExpressInterestButton({ dealId, dealTitle }: ExpressInte
   return (
     <>
       <button
-        onClick={() => setModalOpen(true)}
+        onClick={() => {
+          console.log('Express Interest button clicked')
+          setModalOpen(true)
+        }}
         className="w-full block text-center bg-gray-800 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-900 transition-colors"
       >
         Express Interest

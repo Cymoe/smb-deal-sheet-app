@@ -84,15 +84,15 @@ export default function Navigation() {
   }, [])
 
   const handleSignOut = async () => {
+    console.log('Sign out button clicked - using server-side signout')
+    
     // Close dropdowns immediately
     setDropdownOpen(false)
     setMobileMenuOpen(false)
     
-    // Sign out from Supabase
-    await supabase.auth.signOut()
-    
-    // Single clean redirect - no double navigation, no flashing
-    window.location.href = '/'
+    // Use server-side signout which is more reliable
+    // This will clear cookies on the server and redirect
+    window.location.href = '/api/force-signout'
   }
 
   return (
