@@ -1,8 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   console.log('Force signout endpoint called')
   
   try {
@@ -20,8 +20,11 @@ export async function GET() {
     const cookieStore = await cookies()
     const allCookies = cookieStore.getAll()
     
-    // Create response with cleared cookies
-    const response = NextResponse.redirect(new URL('/', process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'))
+    // Get the origin from the request to stay on the same domain
+    const origin = request.headers.get('origin') || request.nextUrl.origin
+    
+    // Create response that redirects to the SAME domain we're on
+    const response = NextResponse.redirect(new URL('/', origin))
     
     // Clear each cookie
     allCookies.forEach(cookie => {
@@ -38,7 +41,8 @@ export async function GET() {
     
   } catch (error) {
     console.error('Force signout error:', error)
-    // Even on error, redirect to home
-    return NextResponse.redirect(new URL('/', process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'))
+    // Even on error, redirect to home on the SAME domain
+    const origin = request.headers.get('origin') || request.nextUrl.origin
+    return NextResponse.redirect(new URL('/', origin))
   }
 }

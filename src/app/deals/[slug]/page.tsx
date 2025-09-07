@@ -138,7 +138,7 @@ export default async function DealPage({
               </div>
               
               {/* Get Seller Details Button */}
-              <div className="mt-8">
+              <div className="mt-8 relative z-10">
                 {user && hasSubscription ? (
                   <>
                     <a
