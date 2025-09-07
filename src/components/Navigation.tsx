@@ -4,17 +4,17 @@ import Link from 'next/link'
 import { useEffect, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { checkSubscriptionClient } from '@/lib/subscription-client'
 
 export default function Navigation() {
   const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(false) // Don't show loading state
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [hasSubscription, setHasSubscription] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
+  const router = useRouter()
   const supabase = createClient()
   
   // Check if we're on a deal page that requires payment
@@ -69,7 +69,7 @@ export default function Navigation() {
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [supabase.auth])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -84,19 +84,40 @@ export default function Navigation() {
   }, [])
 
   const handleSignOut = async () => {
-    // Clear local state immediately for instant UI update
-    setUser(null)
-    setHasSubscription(false)
-    setDropdownOpen(false)
+    console.log('Sign out button clicked')
     
-    // Sign out from Supabase
-    const { error } = await supabase.auth.signOut()
-    if (error) {
-      console.error('Logout error:', error)
+    try {
+      // Clear dropdown immediately
+      setDropdownOpen(false)
+      setMobileMenuOpen(false)
+      
+      // Clear local state immediately for instant UI feedback
+      setUser(null)
+      setHasSubscription(false)
+      
+      // Call the sign out API endpoint
+      const response = await fetch('/api/auth/signout', {
+        method: 'POST',
+        credentials: 'include'
+      })
+      
+      if (!response.ok) {
+        console.error('Sign out API failed:', response.status)
+      }
+      
+      // Always navigate to home and refresh, regardless of API response
+      router.push('/')
+      
+      // Force a page refresh to clear all client-side state
+      setTimeout(() => {
+        window.location.reload()
+      }, 100)
+      
+    } catch (error) {
+      console.error('Unexpected error during sign out:', error)
+      // Force reload as last resort
+      window.location.href = '/'
     }
-    
-    // Force a hard refresh to clear all state
-    window.location.href = '/'
   }
 
   return (
@@ -171,10 +192,7 @@ export default function Navigation() {
                     
                     <div className="border-t border-gray-100 mt-2 pt-2">
                       <button
-                        onClick={() => {
-                          handleSignOut()
-                          setDropdownOpen(false)
-                        }}
+                        onClick={handleSignOut}
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                       >
                         Sign Out
@@ -252,10 +270,7 @@ export default function Navigation() {
                   Admin
                 </Link>
                 <button
-                  onClick={() => {
-                    handleSignOut()
-                    setMobileMenuOpen(false)
-                  }}
+                  onClick={handleSignOut}
                   className="block w-full text-left text-gray-600 hover:text-gray-900 font-light py-2"
                 >
                   Sign Out
