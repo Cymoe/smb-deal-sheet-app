@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 
 interface BuyerInterestModalProps {
@@ -74,16 +75,23 @@ export default function BuyerInterestModal({
     }
   }
 
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    return () => setMounted(false)
+  }, [])
+
   console.log('BuyerInterestModal render:', { isOpen, dealId, dealTitle })
   
-  if (!isOpen) return null
+  if (!isOpen || !mounted) return null
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4" style={{ zIndex: 99999 }}>
       <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto relative shadow-2xl" style={{ zIndex: 99999 }}>
         <div className="p-6 relative" style={{ zIndex: 99999 }}>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">Express Interest</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Express Interest</h2>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600"
@@ -99,12 +107,12 @@ export default function BuyerInterestModal({
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Interest Recorded!</h3>
-              <p className="text-gray-600">We&apos;ll be in touch within 24 hours.</p>
+              <h3 className="text-xl font-semibold mb-2 text-gray-900">Interest Recorded!</h3>
+              <p className="text-gray-700">We&apos;ll be in touch within 24 hours.</p>
             </div>
           ) : (
             <>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-700 mb-6">
                 Get introduced to the seller of: <strong>{dealTitle}</strong>
               </p>
 
@@ -237,6 +245,7 @@ export default function BuyerInterestModal({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
