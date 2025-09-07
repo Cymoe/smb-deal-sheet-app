@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import Link from 'next/link'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -166,7 +166,7 @@ export default async function DealPage({ params }: { params: Promise<{ slug: str
                       Why This Deal is Interesting
                     </h2>
                     <div className="prose prose-gray max-w-none">
-                      {deal.why_interesting.split('\n').slice(0, 2).map((line, index) => (
+                      {deal.why_interesting.split('\n').slice(0, 2).map((line: string, index: number) => (
                         <p key={index} className="text-gray-700 mb-2">
                           {line.trim()}
                         </p>
@@ -207,7 +207,7 @@ export default async function DealPage({ params }: { params: Promise<{ slug: str
                         <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
-                        Our honest "Real Talk" assessment
+                        Our honest &ldquo;Real Talk&rdquo; assessment
                       </li>
                       <li className="flex items-start gap-2">
                         <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -248,7 +248,7 @@ export default async function DealPage({ params }: { params: Promise<{ slug: str
                     Why This Deal is Interesting
                   </h2>
                   <div className="prose prose-gray max-w-none">
-                    {deal.why_interesting.split('\n').map((line, index) => (
+                    {deal.why_interesting.split('\n').map((line: string, index: number) => (
                       <p key={index} className="text-gray-700 mb-2">
                         {line.trim()}
                       </p>

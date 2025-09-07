@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { Deal } from '@/lib/supabase/types'
 import DealCard from '@/components/DealCard'
 import DealFilters from '@/components/DealFilters'
 import SortDropdown from '@/components/SortDropdown'

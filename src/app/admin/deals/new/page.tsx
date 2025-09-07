@@ -24,7 +24,7 @@ export default function NewDealPage() {
     listing_url: '',
     broker_name: '',
     broker_email: '',
-    status: 'draft' as const,
+    status: 'draft' as 'draft' | 'active' | 'sold' | 'paused',
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -272,7 +272,7 @@ export default function NewDealPage() {
               </label>
               <select
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value as 'draft' | 'active' | 'sold' | 'paused' })}
                 className="w-full border border-gray-300 rounded-md px-3 py-2"
               >
                 <option value="draft">Draft</option>

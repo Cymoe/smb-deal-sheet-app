@@ -77,7 +77,7 @@ export default function SplashPage() {
       <section className="py-16 px-4 bg-white">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            What You'll Get Every Thursday
+            What You&apos;ll Get Every Thursday
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
@@ -105,7 +105,7 @@ export default function SplashPage() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold mb-3 text-gray-900">Expert Analysis</h3>
-              <p className="text-gray-600">Our honest take on each deal's potential and red flags</p>
+              <p className="text-gray-600">Our honest take on each deal&apos;s potential and red flags</p>
             </div>
           </div>
         </div>
@@ -127,7 +127,7 @@ export default function SplashPage() {
                 ))}
               </div>
               <p className="text-gray-700 mb-4">
-                "Found my HVAC business through SMB Deal Sheet. The seller financing terms they highlighted saved me $200k in SBA fees."
+                &ldquo;Found my HVAC business through SMB Deal Sheet. The seller financing terms they highlighted saved me $200k in SBA fees.&rdquo;
               </p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
@@ -146,7 +146,7 @@ export default function SplashPage() {
                 ))}
               </div>
               <p className="text-gray-700 mb-4">
-                "Best $0 I spend each week. The analysis alone would cost thousands from a broker or consultant."
+                &ldquo;Best $0 I spend each week. The analysis alone would cost thousands from a broker or consultant.&rdquo;
               </p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
@@ -171,7 +171,7 @@ export default function SplashPage() {
               <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
                 Manufacturing
               </span>
-              <span className="text-gray-500 text-sm">This Week's Featured Deal</span>
+              <span className="text-gray-500 text-sm">This Week&apos;s Featured Deal</span>
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-4">
               Texas Metal Fabrication Shop - $1.2M EBITDA
@@ -211,7 +211,7 @@ export default function SplashPage() {
             Join 2,847+ Buyers Getting First Access
           </h2>
           <p className="text-xl mb-10 text-blue-100">
-            Stop fighting over the same overpriced listings. Get deals before they're shopped around.
+            Stop fighting over the same overpriced listings. Get deals before they&apos;re shopped around.
           </p>
           <div className="bg-white/10 backdrop-blur rounded-lg p-8 max-w-md mx-auto">
             <NewsletterSignup />

@@ -5,7 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 import { Deal } from '@/lib/supabase/types'
 import { useRouter } from 'next/navigation'
 
-export default function NewsletterExportPage({ params }: { params: { id: string } }) {
+export default function NewsletterExportPage({ params }: { params: Promise<{ id: string }> }) {
+  const [paramsId, setParamsId] = useState<string>('')
   const [deal, setDeal] = useState<Deal | null>(null)
   const [newsletterHtml, setNewsletterHtml] = useState('')
   const [copied, setCopied] = useState(false)
@@ -13,14 +14,19 @@ export default function NewsletterExportPage({ params }: { params: { id: string 
   const supabase = createClient()
 
   useEffect(() => {
-    fetchDeal()
-  }, [params.id])
+    async function loadDeal() {
+      const resolvedParams = await params
+      setParamsId(resolvedParams.id)
+      fetchDeal(resolvedParams.id)
+    }
+    loadDeal()
+  }, [params])
 
-  const fetchDeal = async () => {
+  const fetchDeal = async (id: string) => {
     const { data, error } = await supabase
       .from('deals')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (error) {
@@ -85,7 +91,7 @@ export default function NewsletterExportPage({ params }: { params: { id: string 
         featured_in_newsletter: true,
         newsletter_date: new Date().toISOString().split('T')[0]
       })
-      .eq('id', params.id)
+      .eq('id', paramsId)
 
     if (!error) {
       alert('Deal marked as featured in newsletter!')
