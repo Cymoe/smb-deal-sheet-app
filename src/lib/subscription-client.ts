@@ -1,7 +1,7 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/client'
 
-export async function checkSubscription(userId: string): Promise<boolean> {
-  const supabase = await createClient()
+export async function checkSubscriptionClient(userId: string): Promise<boolean> {
+  const supabase = createClient()
   
   // First check if this is a test account
   const { data: { user } } = await supabase.auth.getUser()

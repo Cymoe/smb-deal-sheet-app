@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
 import { useRouter, usePathname } from 'next/navigation'
-import { checkSubscription } from '@/lib/subscription'
+import { checkSubscriptionClient } from '@/lib/subscription-client'
 
 export default function Navigation() {
   const [user, setUser] = useState<User | null>(null)
@@ -28,7 +28,7 @@ export default function Navigation() {
       setUser(user)
       
       if (user) {
-        const isSubscribed = await checkSubscription(user.id)
+        const isSubscribed = await checkSubscriptionClient(user.id)
         setHasSubscription(isSubscribed)
       }
       
@@ -42,7 +42,7 @@ export default function Navigation() {
       setUser(session?.user ?? null)
       
       if (session?.user) {
-        const isSubscribed = await checkSubscription(session.user.id)
+        const isSubscribed = await checkSubscriptionClient(session.user.id)
         setHasSubscription(isSubscribed)
       } else {
         setHasSubscription(false)

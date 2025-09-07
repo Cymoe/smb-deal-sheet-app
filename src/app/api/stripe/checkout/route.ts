@@ -11,12 +11,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     
-    const { dealSlug, billingPeriod } = await request.json()
+    const { dealSlug, billingPeriod, testMode } = await request.json()
     
     // Select the appropriate price ID
-    const priceId = billingPeriod === 'annual' 
+    let priceId = billingPeriod === 'annual' 
       ? process.env.STRIPE_PRICE_ID_ANNUAL!
       : process.env.STRIPE_PRICE_ID_MONTHLY!
+    
+    // Override with test prices if testMode is true and user is you
+    if (testMode && user.email === 'your-email@example.com') {
+      priceId = billingPeriod === 'annual' 
+        ? 'price_1S4il0PEKKSAGnQaKZ1UUlJy'  // Test annual price
+        : 'price_1S4igWPEKKSAGnQaUare5NTb'  // Test monthly price
+    }
     
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
