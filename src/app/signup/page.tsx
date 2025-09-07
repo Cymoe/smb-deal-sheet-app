@@ -17,7 +17,7 @@ function SignUpForm() {
     setLoading(true)
     setError('')
 
-    // Pass the redirect URL through to the callback
+    // Use the current origin for OAuth redirects
     const authRedirectUrl = `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`
 
     const { error } = await supabase.auth.signInWithOAuth({

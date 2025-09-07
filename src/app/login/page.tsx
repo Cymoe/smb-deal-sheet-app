@@ -41,7 +41,7 @@ function LoginForm() {
     setError('')
 
     try {
-      // Simple approach: use the current origin for the redirect
+      // Use the current origin for OAuth redirects
       const authRedirectUrl = `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`
 
       const { data, error } = await supabase.auth.signInWithOAuth({
