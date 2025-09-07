@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Navigation from "@/components/Navigation";
-import "./globals.css";
+import "../globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,11 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SMB Deal Sheet - Track Your Deals",
-  description: "Track and manage your deals in one place",
+  title: "Join SMB Deal Sheet - Get Off-Market Deals Weekly",
+  description: "Join 2,847+ buyers getting exclusive access to vetted businesses with real financials and seller financing — delivered weekly",
 };
 
-export default function RootLayout({
+export default function SplashLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -26,7 +25,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Navigation />
         {children}
       </body>
     </html>
