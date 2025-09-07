@@ -4,31 +4,53 @@ import Link from 'next/link'
 import { useEffect, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
+import { checkSubscription } from '@/lib/subscription'
 
 export default function Navigation() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [hasSubscription, setHasSubscription] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
+  const pathname = usePathname()
   const supabase = createClient()
+  
+  // Check if we're on a deal page that requires payment
+  const isDealPage = pathname?.startsWith('/deals/') && pathname !== '/deals'
 
   useEffect(() => {
-    // Check current user
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    // Check current user and subscription
+    const checkUserAndSubscription = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
+      
+      if (user) {
+        const isSubscribed = await checkSubscription(user.id)
+        setHasSubscription(isSubscribed)
+      }
+      
       setLoading(false)
-    })
+    }
+    
+    checkUserAndSubscription()
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null)
+      
+      if (session?.user) {
+        const isSubscribed = await checkSubscription(session.user.id)
+        setHasSubscription(isSubscribed)
+      } else {
+        setHasSubscription(false)
+      }
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [supabase.auth])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -57,9 +79,12 @@ export default function Navigation() {
               SMB Deal Sheet
             </Link>
             <div className="hidden md:flex items-center space-x-6">
-              <Link href="/deals" className="text-gray-600 hover:text-gray-900 font-light transition-colors">
-                Featured Deals
-              </Link>
+              {/* Hide Featured Deals on deal pages without subscription */}
+              {(!isDealPage || hasSubscription) && (
+                <Link href="/deals" className="text-gray-600 hover:text-gray-900 font-light transition-colors">
+                  Featured Deals
+                </Link>
+              )}
               <a href="https://www.myleskameron.com/sell-your-business" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-900 font-light transition-colors">
                 Sell Your Business
               </a>
@@ -163,13 +188,16 @@ export default function Navigation() {
       {mobileMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-100">
           <div className="px-4 py-3 space-y-3">
-            <Link
-              href="/deals"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-gray-600 hover:text-gray-900 font-light py-2"
-            >
-              Featured Deals
-            </Link>
+            {/* Hide Featured Deals on deal pages without subscription */}
+            {(!isDealPage || hasSubscription) && (
+              <Link
+                href="/deals"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-gray-600 hover:text-gray-900 font-light py-2"
+              >
+                Featured Deals
+              </Link>
+            )}
             <a
               href="https://www.myleskameron.com/sell-your-business"
               target="_blank"

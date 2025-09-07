@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 export default function ReturnPage() {
   useEffect(() => {
     // Get the stored origin and redirect there
-    const origin = localStorage.getItem('paymentOrigin') || 'http://localhost:3000'
+    const origin = localStorage.getItem('paymentOrigin') || window.location.origin
     const returnUrl = `${origin}/payment-success`
     
     // Clear the stored origin
