@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase/admin'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Get the last checkout session
     const sessions = await stripe.checkout.sessions.list({
@@ -43,10 +43,10 @@ export async function GET(request: NextRequest) {
       profileStatus,
       webhookSecret: process.env.STRIPE_WEBHOOK_SECRET ? 'Set' : 'Not set',
     })
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json({ 
-      error: error.message,
-      type: error.type,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      type: 'unknown',
     })
   }
 }

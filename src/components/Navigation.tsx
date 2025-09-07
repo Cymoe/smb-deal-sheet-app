@@ -60,9 +60,9 @@ export default function Navigation() {
               <Link href="/deals" className="text-gray-600 hover:text-gray-900 font-light transition-colors">
                 Featured Deals
               </Link>
-              <Link href="/sell-your-business" className="text-gray-600 hover:text-gray-900 font-light transition-colors">
+              <a href="https://www.myleskameron.com/sell-your-business" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-900 font-light transition-colors">
                 Sell Your Business
-              </Link>
+              </a>
               <a href="https://myleskameron.beehiiv.com/?close_draft_preview=true" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-900 font-light transition-colors">
                 Newsletter
               </a>
@@ -170,13 +170,15 @@ export default function Navigation() {
             >
               Featured Deals
             </Link>
-            <Link
-              href="/sell-your-business"
+            <a
+              href="https://www.myleskameron.com/sell-your-business"
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-gray-600 hover:text-gray-900 font-light py-2"
             >
               Sell Your Business
-            </Link>
+            </a>
             <a
               href="https://myleskameron.beehiiv.com/?close_draft_preview=true"
               target="_blank"

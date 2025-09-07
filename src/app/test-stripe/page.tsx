@@ -39,8 +39,8 @@ export default function TestStripePage() {
       } else if (data.url) {
         setResult(`Success! Checkout URL generated: ${data.url}`)
       }
-    } catch (error: any) {
-      setResult(`Error: ${error.message}`)
+    } catch (error) {
+      setResult(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setLoading(false)
     }
@@ -82,9 +82,9 @@ export default function TestStripePage() {
         <div className="mt-8 p-4 bg-blue-50 rounded-lg">
           <p className="text-sm text-blue-700">
             <strong>Next steps:</strong>
-            <br />1. Make sure you're logged in
-            <br />2. Click "Test Checkout API" to verify the integration
-            <br />3. If successful, you'll see a Stripe checkout URL
+            <br />1. Make sure you&apos;re logged in
+            <br />2. Click &quot;Test Checkout API&quot; to verify the integration
+            <br />3. If successful, you&apos;ll see a Stripe checkout URL
             <br />4. For production, set up the webhook at /api/stripe/webhook
           </p>
         </div>
